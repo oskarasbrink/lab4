@@ -1,0 +1,58 @@
+ ldi r16 ,HIGH(ramend);	stackpekaren
+ out sph,r16;			|
+ ldi r16,low(ramend);	|
+ out sph,r16;			V
+
+ clr r16;		pinA
+ out ddra,r16;	insignal
+
+ ser r16;		portB
+ out ddrb,r16;	utsignal
+
+ out ddrd,r16
+ start:
+ ldi r16,(1<<adlar);	adc0 ingång vald
+ out admux,r16;			adlar=1, left adjust result.
+
+ ldi r16,(1<<aden);	ad enable
+ out adcsra,r16;	slår på strömmen till ad-hardwarewere
+
+ sbi adcsra,adsc ;a/d start conversion
+
+WAIT:
+	sbic adcsra,adsc	;vänta tills konvertering är klar, dvs adsc är återställt till 0.	
+	rjmp wait
+	
+
+	in r16,ADCH; laddar r16 med A/D Converted HIGH (left adjusted gör att ADCL är greta garbo)
+	;;
+
+	ldi r17,(1|1<<ADLAR);	kollar på PINA,1 istället med left adjust result.
+	out admux,r17		;	
+
+	sbi adcsra,adsc ;A/D start conversion
+WAIT1:
+	sbic adcsra,adsc	;vänta tills konvertering är klar, dvs adsc är återställt till 0.	
+	rjmp wait1
+	
+	in r17,ADCH ;;	laddar r17 med Ad converted HIGH (8 bitar y kordinat
+
+	
+	ldi ZH,HIGH(BIN_TO_LED*2)
+	ldi ZL,LOW(BIN_TO_LED*2)
+	andi r16,$E0
+	swap r16
+	lsr r16
+	
+	add ZL,r16
+	lpm r16,z
+
+
+	
+	out portd,r16
+	out PORTB,r17;
+	rjmp start
+	;out PORTB,r17;
+
+	BIN_TO_LED:
+	.db $40,$20,$10,$08,$04,$02,$01
