@@ -1,0 +1,28 @@
+clr r16
+out DDRA,r16
+
+ser r16
+out DDRB,r16
+
+ldi r16,HIGH(RAMEND)
+out SPH,r16
+ldi r16, LOW(RAMEND)
+out SPL,r16
+
+ldi r16,(1<<ADLAR);
+out ADMUX,r16 ;ADC0 ingång vald, Adlar = 1
+
+ldi r16,(1<<ADEN)
+out ADCSRA,r16 ;slå på spänning till A/D hårdvaran ombord
+LOOP:
+sbi ADCSRA,ADSC
+WAIT:
+sbic ADCSRA,ADSC
+jmp wait
+
+in r16,ADCH
+
+
+
+out PORTB,r16
+rjmp LOOP
