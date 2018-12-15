@@ -1,0 +1,79 @@
+/*
+ * joystick.asm
+ *
+ *  Created: 12/15/2018 12:24:45 PM
+ *   Author: joete512
+ */ 
+
+
+
+ clr r16
+ out DDRD, r16
+
+ clr r16
+ out DDRA, r16
+
+ ser r16
+ out DDRB, r16
+
+ ldi r16, HIGH(RAMEND)
+ out SPH, r16
+ ldi r16, LOW(RAMEND)
+ out SPL, r16
+
+ ldi r16, (1<<ADLAR)
+ out ADMUX, r16
+
+ ldi r16, (1<<ADEN)
+ out ADCSRA, r16
+
+ ldi r17, $FF
+ 
+  LOOP:
+ sbi ADCSRA, ADSC
+ WAIT:
+ sbic ADCSRA, ADSC
+ jmp WAIT
+ out PORTD, r16
+  
+
+ in r16, ADCH
+
+
+ cpi r16, $E
+ brlo PLUS
+ UT:
+ out PORTB, r17
+ out PORTD, r16
+
+ jmp LOOP
+
+ PLUS:
+ ldi r17, $20
+
+;out PORTB,r17
+call DELAY
+call DELAY
+ rjmp UT
+ 
+
+
+
+DELAY:
+push r17
+push r16
+	ldi r18,3
+D_3:
+	ldi r17,0
+D_2:
+	ldi r16,0
+D_1:
+	dec r16
+	brne D_1
+	dec r17
+	brne D_2
+	dec r18
+	brne D_3
+	ret 
+pop r16
+pop r17
