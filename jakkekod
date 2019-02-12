@@ -1,0 +1,107 @@
+ldi r16, HIGH(RAMEND)
+out sph,r16
+ldi r16, low(ramend)
+out spl, r16
+rcall hw_init
+
+
+
+loop:
+	ldi r17,8
+
+	blue:
+	ldi r16,$F0 ;ladda med blå
+	
+	blue_loop:
+	cbi porta,0
+	cbi porta,1
+
+
+	rol r16
+	brcc pc+2
+	sbi porta,0
+	clc
+
+	sbi porta,1
+	dec r17
+	brne blue_loop
+	;rjmp blue_loop
+
+
+	ldi r17,8
+	green:
+	ldi r16,$00; ladda med grön
+
+	green_loop:
+	cbi porta,0
+	cbi porta,1
+
+
+	rol r16
+	
+	brcc pc+2
+	sbi porta,0
+	clc
+
+	sbi porta,1
+	dec r17
+	brne green_loop
+
+
+
+	ldi r17,8
+	red:
+	ldi r16, $00; ladda med röd
+
+	red_loop:
+
+	cbi porta,0
+	cbi porta,1
+
+
+	rol r16
+	
+	brcc pc+2
+	sbi porta,0
+	clc
+
+	sbi porta,1
+	dec r17
+	brne red_loop
+	
+
+
+	
+	ldi r17,8
+	mux:
+
+		ldi r16, $0; ladda med mux EJ MUX KANSKE MUX
+		mux_loop:
+		cbi porta,0
+		cbi porta,1
+
+
+		rol r16
+		
+		brcc pc+2
+		sbi porta,0
+		clc
+		sbi porta,1
+		dec r17
+		brne mux_loop
+
+
+
+
+		end:
+		sbi porta,2
+		cbi porta,2
+		
+		;;latch
+	
+	rjmp loop
+
+hw_init:
+ser r16
+out ddra, r16
+ret
